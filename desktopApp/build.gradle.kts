@@ -12,6 +12,7 @@ kotlin {
             dependencies {
                 implementation(compose.desktop.currentOs)
                 implementation(project(":shared"))
+                implementation("io.insert-koin:koin-core-jvm:4.1.1")
             }
         }
     }
