@@ -9,6 +9,7 @@ import domain.usecase.SearchRepositoriesUseCase
 import io.ktor.client.HttpClient
 import org.koin.dsl.module
 import io.ktor.client.engine.cio.CIO
+import presentation.viewmodel.RepoViewModel
 
 val appModule = module {
 
@@ -25,4 +26,6 @@ val appModule = module {
     single { SearchRepositoriesUseCase(get()) }
     single { GetRepositoryDetailsUseCase(get()) }
     single { GetRepositoryContentsUseCase(get()) }
+
+    single { RepoViewModel(get(), get(), get()) }
 }
