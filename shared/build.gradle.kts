@@ -34,6 +34,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-content-negotiation:2.3.5")
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
                 implementation("io.insert-koin:koin-core:4.1.1")
+                implementation("io.ktor:ktor-client-cio:2.3.5")
             }
         }
         val androidMain by getting {
