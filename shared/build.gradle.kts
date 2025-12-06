@@ -35,6 +35,7 @@ kotlin {
                 implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
                 implementation("io.insert-koin:koin-core:4.1.1")
                 implementation("io.ktor:ktor-client-cio:2.3.5")
+                implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5")
             }
         }
         val androidMain by getting {
@@ -45,6 +46,7 @@ kotlin {
                 implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
                 implementation("io.ktor:ktor-client-okhttp:2.3.5")
                 implementation("io.insert-koin:koin-android:4.1.1")
+                implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
             }
         }
         val iosX64Main by getting
@@ -62,6 +64,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-okhttp:2.3.5")
                 implementation("io.ktor:ktor-client-java:2.3.5")
                 implementation("io.insert-koin:koin-core:4.1.1")
+                implementation("androidx.lifecycle:lifecycle-viewmodel:2.10.0")
             }
         }
     }
