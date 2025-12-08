@@ -38,6 +38,7 @@ kotlin {
                 implementation("io.insert-koin:koin-core:4.1.1")
                 implementation("io.ktor:ktor-client-cio:3.3.3")
                 implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.6")
+                implementation("org.slf4j:slf4j-simple:2.0.17")
             }
         }
         val androidMain by getting {
