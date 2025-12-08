@@ -64,10 +64,6 @@ kotlin {
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
-                implementation("io.ktor:ktor-client-okhttp:3.3.3")
-                implementation("io.ktor:ktor-client-java:3.3.3")
-                implementation("io.insert-koin:koin-core:4.1.1")
-                implementation("androidx.lifecycle:lifecycle-viewmodel:2.10.0")
             }
         }
     }
