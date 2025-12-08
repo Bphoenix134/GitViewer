@@ -39,7 +39,10 @@ import presentation.viewmodel.state.SearchState
 import androidx.compose.ui.text.input.ImeAction
 
 @Composable
-fun RepoSearchScreen(viewModel: RepoViewModel) {
+fun RepoSearchScreen(
+    viewModel: RepoViewModel,
+    onRepoClick: (owner: String, repo: String) -> Unit
+) {
     var query by remember { mutableStateOf("") }
     val state by viewModel.searchState.collectAsState()
 
@@ -108,7 +111,14 @@ fun RepoSearchScreen(viewModel: RepoViewModel) {
         }
 
         when (state) {
-            is SearchState.Idle -> Spacer(Modifier.size(1.dp))
+            is SearchState.Success -> RepoList(
+                repos = (state as SearchState.Success).data,
+                onClick = { repo ->
+                    if (repo.owner.isNotBlank()) {
+                        onRepoClick(repo.owner, repo.name)
+                    }
+                }
+            )
 
             is SearchState.Loading -> Box(
                 modifier = Modifier.fillMaxSize(),
@@ -122,7 +132,7 @@ fun RepoSearchScreen(viewModel: RepoViewModel) {
                 color = MaterialTheme.colors.error
             )
 
-            is SearchState.Success -> RepoList((state as SearchState.Success).data)
+            else -> {}
         }
     }
 }

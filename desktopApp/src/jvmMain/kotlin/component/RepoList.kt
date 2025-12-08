@@ -1,5 +1,6 @@
 package component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,32 +17,29 @@ import androidx.compose.ui.unit.dp
 import domain.model.Repo
 
 @Composable
-fun RepoList(repos: List<Repo>) {
+fun RepoList(
+    repos: List<Repo>,
+    onClick: (Repo) -> Unit
+) {
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
         items(repos) { repo ->
             Card(
                 elevation = 4.dp,
-                modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 6.dp)
+                    .clickable { onClick(repo) }
             ) {
-                Column(
-                    modifier = Modifier.padding(12.dp)
-                ) {
-                    Text(
-                        text = repo.fullName,
-                        style = MaterialTheme.typography.subtitle1,
-                        color = Color.Blue
-                    )
-                    if (repo.description != null) {
-                        Text(
-                            text = repo.description.toString(),
-                            modifier = Modifier.padding(top = 4.dp)
-                        )
+                Column(Modifier.padding(12.dp)) {
+                    Text(repo.fullName, color = Color.Blue)
+                    repo.description?.let {
+                        Text(it, Modifier.padding(top = 4.dp))
                     }
                     Text(
-                        text = "${repo.language} · ⭐${repo.stars}",
-                        modifier = Modifier.padding(top = 4.dp),
+                        "${repo.language} · ⭐${repo.stars}",
+                        Modifier.padding(top = 4.dp),
                         color = Color.Gray
                     )
                 }
