@@ -2,6 +2,7 @@ package presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import domain.model.TreeNode
 import domain.usecase.GetRepositoryContentsUseCase
 import domain.usecase.GetRepositoryDetailsUseCase
 import domain.usecase.SearchRepositoriesUseCase
@@ -51,15 +52,32 @@ class RepoViewModel(
         }
     }
 
-    fun loadRepositoryContents(owner: String, repo: String) {
+    fun loadRepositoryContents(owner: String, repo: String, path: String) {
         viewModelScope.launch {
             _contentState.value = ContentState.Loading
             try {
-                val list = getRepositoryContentsUseCase(owner, repo)
+                val list = getRepositoryContentsUseCase(owner, repo, path)
                 _contentState.value = ContentState.Success(list)
             } catch (e: Exception) {
                 _contentState.value = ContentState.Error(e.message ?: "Unknown error")
             }
+        }
+    }
+
+    suspend fun loadDirectory(
+        viewModel: RepoViewModel,
+        owner: String,
+        repo: String,
+        path: String
+    ): List<TreeNode> {
+        val items = viewModel.getRepositoryContentsUseCase(owner, repo, path)
+        return items.map { c ->
+            TreeNode(
+                name = c.name,
+                path = c.path,
+                isDir = c.type == "dir",
+                downloadUrl = c.downloadUrl
+            )
         }
     }
 }
