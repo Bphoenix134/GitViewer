@@ -26,8 +26,8 @@ class GitHubApi(private val client: HttpClient) {
         return client.get("$base/repos/$owner/$repo").body()
     }
 
-    suspend fun getContentOfRepo(owner: String, repo: String): List<RepoContentDto> {
-        return client.get("$base/repos/$owner/$repo/contents").body()
+    suspend fun getContentOfRepo(owner: String, repo: String, path: String): List<RepoContentDto> {
+        return client.get("$base/repos/$owner/$repo/contents/$path").body()
     }
 }
 
