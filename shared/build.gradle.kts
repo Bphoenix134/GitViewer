@@ -2,6 +2,8 @@ plugins {
     kotlin("multiplatform")
     id("com.android.library")
     id("org.jetbrains.compose")
+    id("org.jetbrains.kotlin.plugin.compose")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -28,14 +30,14 @@ kotlin {
                 implementation(compose.material)
                 @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
                 implementation(compose.components.resources)
-                implementation("io.ktor:ktor-client-core:2.3.5")
-                implementation("io.github.aakira:napier:2.6.1")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-                implementation("io.ktor:ktor-client-content-negotiation:2.3.5")
-                implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
+                implementation("io.ktor:ktor-client-core:3.3.3")
+                implementation("io.github.aakira:napier:2.7.1")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+                implementation("io.ktor:ktor-client-content-negotiation:3.3.3")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.3")
                 implementation("io.insert-koin:koin-core:4.1.1")
-                implementation("io.ktor:ktor-client-cio:2.3.5")
-                implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.5")
+                implementation("io.ktor:ktor-client-cio:3.3.3")
+                implementation("org.jetbrains.androidx.lifecycle:lifecycle-viewmodel:2.9.6")
             }
         }
         val androidMain by getting {
@@ -44,7 +46,7 @@ kotlin {
                 api("androidx.appcompat:appcompat:1.7.1")
                 api("androidx.core:core-ktx:1.17.0")
                 implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
-                implementation("io.ktor:ktor-client-okhttp:2.3.5")
+                implementation("io.ktor:ktor-client-okhttp:3.3.3")
                 implementation("io.insert-koin:koin-android:4.1.1")
                 implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
             }
@@ -61,8 +63,8 @@ kotlin {
         val desktopMain by getting {
             dependencies {
                 implementation(compose.desktop.common)
-                implementation("io.ktor:ktor-client-okhttp:2.3.5")
-                implementation("io.ktor:ktor-client-java:2.3.5")
+                implementation("io.ktor:ktor-client-okhttp:3.3.3")
+                implementation("io.ktor:ktor-client-java:3.3.3")
                 implementation("io.insert-koin:koin-core:4.1.1")
                 implementation("androidx.lifecycle:lifecycle-viewmodel:2.10.0")
             }
