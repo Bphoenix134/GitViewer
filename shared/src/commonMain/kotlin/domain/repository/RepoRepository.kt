@@ -7,5 +7,5 @@ import domain.model.RepoDetailed
 interface RepoRepository {
     suspend fun searchRepositories(query: String): List<Repo>
     suspend fun getRepository(owner: String, repo: String): RepoDetailed
-    suspend fun getRepositoryContents(owner: String, repo: String): List<RepoContent>
+    suspend fun getRepositoryContents(owner: String, repo: String, path: String): List<RepoContent>
 }
