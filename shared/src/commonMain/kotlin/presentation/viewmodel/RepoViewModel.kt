@@ -12,6 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import presentation.viewmodel.state.RepoUiState
 import presentation.viewmodel.state.SearchUiState
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import utils.FileDownloader
 
 class RepoViewModel(
     private val searchRepositoriesUseCase: SearchRepositoriesUseCase,
