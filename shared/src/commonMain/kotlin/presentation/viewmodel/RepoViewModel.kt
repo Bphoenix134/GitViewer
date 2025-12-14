@@ -2,15 +2,14 @@ package presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import domain.model.TreeNode
 import domain.usecase.GetRepositoryContentsUseCase
 import domain.usecase.GetRepositoryDetailsUseCase
 import domain.usecase.SearchRepositoriesUseCase
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import presentation.viewmodel.state.ContentState
-import presentation.viewmodel.state.DetailsState
+import presentation.viewmodel.state.RepoUiState
 import presentation.viewmodel.state.SearchState
 
 class RepoViewModel(
@@ -22,62 +21,44 @@ class RepoViewModel(
     private val _searchState = MutableStateFlow<SearchState>(SearchState.Idle)
     val searchState: StateFlow<SearchState> = _searchState
 
-    private val _detailsState = MutableStateFlow<DetailsState>(DetailsState.Idle)
-    val detailsState: StateFlow<DetailsState> = _detailsState
-
-    private val _contentState = MutableStateFlow<ContentState>(ContentState.Idle)
-    val contentState: StateFlow<ContentState> = _contentState
-
     fun searchRepositories(query: String) {
         viewModelScope.launch {
             _searchState.value = SearchState.Loading
             try {
-                val list = searchRepositoriesUseCase(query)
-                _searchState.value = SearchState.Success(list)
+                _searchState.value =
+                    SearchState.Success(searchRepositoriesUseCase(query))
             } catch (e: Exception) {
-                _searchState.value = SearchState.Error(e.message ?: "Unknown error")
+                _searchState.value =
+                    SearchState.Error(e.message ?: "Unknown error")
             }
         }
     }
 
-    fun loadRepositoryDetails(owner: String, repo: String) {
+    private val _repoState = MutableStateFlow<RepoUiState>(RepoUiState.Idle)
+    val repoState: StateFlow<RepoUiState> = _repoState
+
+    fun loadRepository(owner: String, repo: String) {
         viewModelScope.launch {
-            _detailsState.value = DetailsState.Loading
-            try {
-                val details = getRepositoryDetailsUseCase(owner, repo)
-                _detailsState.value = DetailsState.Success(details)
-            } catch (e: Exception) {
-                _detailsState.value = DetailsState.Error(e.message ?: "Unknown error")
-            }
-        }
-    }
+            _repoState.value = RepoUiState.Loading
 
-    fun loadRepositoryContents(owner: String, repo: String, path: String) {
-        viewModelScope.launch {
-            _contentState.value = ContentState.Loading
             try {
-                val list = getRepositoryContentsUseCase(owner, repo, path)
-                _contentState.value = ContentState.Success(list)
-            } catch (e: Exception) {
-                _contentState.value = ContentState.Error(e.message ?: "Unknown error")
-            }
-        }
-    }
+                val detailsDeferred = async {
+                    getRepositoryDetailsUseCase(owner, repo)
+                }
+                val contentsDeferred = async {
+                    getRepositoryContentsUseCase(owner, repo)
+                }
 
-    suspend fun loadDirectory(
-        viewModel: RepoViewModel,
-        owner: String,
-        repo: String,
-        path: String
-    ): List<TreeNode> {
-        val items = viewModel.getRepositoryContentsUseCase(owner, repo, path)
-        return items.map { c ->
-            TreeNode(
-                name = c.name,
-                path = c.path,
-                isDir = c.type == "dir",
-                downloadUrl = c.downloadUrl
-            )
+                _repoState.value = RepoUiState.Success(
+                    details = detailsDeferred.await(),
+                    contents = contentsDeferred.await()
+                )
+
+            } catch (e: Exception) {
+                _repoState.value = RepoUiState.Error(
+                    e.message ?: "Unknown error"
+                )
+            }
         }
     }
 }
