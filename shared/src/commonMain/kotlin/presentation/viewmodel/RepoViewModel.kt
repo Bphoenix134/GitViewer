@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import presentation.viewmodel.state.RepoUiState
-import presentation.viewmodel.state.SearchState
+import presentation.viewmodel.state.SearchUiState
 
 class RepoViewModel(
     private val searchRepositoriesUseCase: SearchRepositoriesUseCase,
@@ -19,18 +19,18 @@ class RepoViewModel(
     private val getRepositoryContentsUseCase: GetRepositoryContentsUseCase
 ) : ViewModel() {
 
-    private val _searchState = MutableStateFlow<SearchState>(SearchState.Idle)
-    val searchState: StateFlow<SearchState> = _searchState
+    private val _searchUiState = MutableStateFlow<SearchUiState>(SearchUiState.Idle)
+    val searchUiState: StateFlow<SearchUiState> = _searchUiState
 
     fun searchRepositories(query: String) {
         viewModelScope.launch {
-            _searchState.value = SearchState.Loading
+            _searchUiState.value = SearchUiState.Loading
             try {
-                _searchState.value =
-                    SearchState.Success(searchRepositoriesUseCase(query))
+                _searchUiState.value =
+                    SearchUiState.Success(searchRepositoriesUseCase(query))
             } catch (e: Exception) {
-                _searchState.value =
-                    SearchState.Error(e.message ?: "Unknown error")
+                _searchUiState.value =
+                    SearchUiState.Error(e.message ?: "Unknown error")
             }
         }
     }
