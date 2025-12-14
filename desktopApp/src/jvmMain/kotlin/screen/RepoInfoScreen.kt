@@ -55,7 +55,7 @@ fun RepoInfoScreen(
     LaunchedEffect(Unit) {
         viewModel.loadRepositoryDetails(owner, repo)
         viewModel.loadRepositoryContents(owner, repo, "")
-        rootNodes = viewModel.loadDirectory(viewModel, owner, repo, "")
+        rootNodes = viewModel.loadDirectory(owner, repo, "")
     }
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
@@ -132,21 +132,13 @@ fun RepoInfoScreen(
                 color = MaterialTheme.colors.error
             )
 
-            is ContentState.Success -> {
-                val files = (contentState as ContentState.Success).data
-
-                LazyColumn(Modifier.fillMaxWidth().padding(top = 10.dp)) {
-                    items(files) { item ->
-                        TreeView(
-                            nodes = rootNodes,
-                            onFileClick = onFileClick,
-                            onOpenDir = { node ->
-                                viewModel.loadDirectory(viewModel, owner, repo, node.path)
-                            }
-                        )
+            is ContentState.Success -> TreeView(
+                    nodes = rootNodes,
+                    onFileClick = onFileClick,
+                    onOpenDir = { node ->
+                        viewModel.loadDirectory(owner, repo, "")
                     }
-                }
-            }
+            )
 
             else -> {}
         }
@@ -179,7 +171,7 @@ fun TreeNodeView(
 ) {
     val scope = rememberCoroutineScope()
 
-    Column(Modifier.padding(start = 8.dp)) {
+    Column(Modifier.padding(start = 16.dp)) {
 
         Row(
             Modifier
@@ -193,27 +185,30 @@ fun TreeNodeView(
                             node.isExpanded = !node.isExpanded
                         }
                     } else {
-                        if (node.downloadUrl != null)
-                            onFileClick(node.name, node.downloadUrl!!)
+                        node.downloadUrl?.let {
+                            onFileClick(node.name, it)
+                        }
                     }
                 }
                 .padding(6.dp)
         ) {
             Text(
-                text = if (node.isDir) {
-                    if (node.isExpanded) "📂 ${node.name}" else "📁 ${node.name}"
-                } else {
-                    "📄 ${node.name}"
+                text = when {
+                    node.isDir && node.isExpanded -> "📂 ${node.name}"
+                    node.isDir -> "📁 ${node.name}"
+                    else -> "📄 ${node.name}"
                 }
             )
         }
 
-        if (node.isExpanded && node.children != null) {
-            TreeView(
-                nodes = node.children!!,
-                onFileClick = onFileClick,
-                onOpenDir = onOpenDir
-            )
+        if (node.isExpanded) {
+            node.children?.forEach {
+                TreeNodeView(
+                    node = it,
+                    onFileClick = onFileClick,
+                    onOpenDir = onOpenDir
+                )
+            }
         }
     }
 }

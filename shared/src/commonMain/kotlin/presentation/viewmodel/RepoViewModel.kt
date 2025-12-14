@@ -65,18 +65,16 @@ class RepoViewModel(
     }
 
     suspend fun loadDirectory(
-        viewModel: RepoViewModel,
         owner: String,
         repo: String,
         path: String
     ): List<TreeNode> {
-        val items = viewModel.getRepositoryContentsUseCase(owner, repo, path)
-        return items.map { c ->
+        return getRepositoryContentsUseCase(owner, repo, path).map {
             TreeNode(
-                name = c.name,
-                path = c.path,
-                isDir = c.type == "dir",
-                downloadUrl = c.downloadUrl
+                name = it.name,
+                path = it.path,
+                isDir = it.type == "dir",
+                downloadUrl = it.downloadUrl
             )
         }
     }
