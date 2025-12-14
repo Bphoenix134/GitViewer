@@ -20,8 +20,8 @@ class RepoRepositoryImpl(
         return dto.toDomain()
     }
 
-    override suspend fun getRepositoryContents(owner: String, repo: String): List<RepoContent> {
-        val list = api.getContentOfRepo(owner, repo)
+    override suspend fun getRepositoryContents(owner: String, repo: String, path: String): List<RepoContent> {
+        val list = api.getContentOfRepo(owner, repo, path)
         return list.map { it.toDomain() }
     }
 }
