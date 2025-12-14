@@ -70,14 +70,14 @@ fun RepoInfoScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Назад"
+                    contentDescription = "Back"
                 )
             }
 
             Spacer(Modifier.size(15.dp))
 
             Text(
-                text = "Информация о репозитории",
+                text = "Information about repository",
                 style = MaterialTheme.typography.h5,
             )
         }
@@ -102,7 +102,7 @@ fun RepoInfoScreen(
 
                 Spacer(Modifier.height(10.dp))
 
-                Text("Язык: ${info.language ?: "-"}")
+                Text("Language: ${info.language ?: "-"}")
                 Text("⭐ Stars: ${info.stars}")
                 Text("\uD83D\uDCC4 Forks: ${info.forks}")
                 Text("⭕ Issues: ${info.issues}")
@@ -123,7 +123,7 @@ fun RepoInfoScreen(
 
         Spacer(Modifier.height(15.dp))
 
-        Text("Структура репозитория", style = MaterialTheme.typography.h6)
+        Text("Structure of repository", style = MaterialTheme.typography.h6)
 
         when (contentState) {
 

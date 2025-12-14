@@ -58,7 +58,7 @@ fun FileViewerScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Назад"
+                    contentDescription = "Back"
                 )
             }
 
@@ -71,7 +71,7 @@ fun FileViewerScreen(
 
         when {
             text == null && error == null -> CircularProgressIndicator()
-            error != null -> Text("Ошибка: $error", color = MaterialTheme.colors.error)
+            error != null -> Text("Error: $error", color = MaterialTheme.colors.error)
             else -> Text(
                 text!!,
                 modifier = Modifier

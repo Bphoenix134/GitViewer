@@ -64,7 +64,7 @@ fun RepoSearchScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                placeholder = { Text("Введите запрос") },
+                placeholder = { Text("Enter your query") },
                 maxLines = 1,
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Black,
@@ -74,7 +74,7 @@ fun RepoSearchScreen(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.Search,
-                        contentDescription = "Поиск"
+                        contentDescription = "Search"
                     )
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -104,7 +104,7 @@ fun RepoSearchScreen(
                 )
             ) {
                 Text(
-                    text = "Поиск",
+                    text = "Search",
                     color = Color.White
                 )
             }
