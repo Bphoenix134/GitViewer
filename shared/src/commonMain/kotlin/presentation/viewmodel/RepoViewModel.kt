@@ -6,6 +6,7 @@ import domain.model.TreeNode
 import domain.usecase.GetRepositoryContentsUseCase
 import domain.usecase.GetRepositoryDetailsUseCase
 import domain.usecase.SearchRepositoriesUseCase
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -50,18 +51,18 @@ class RepoViewModel(
     fun loadRepository(owner: String, repo: String) {
         viewModelScope.launch {
             _repoState.value = RepoUiState.Loading
-
             try {
                 val detailsDeferred = async {
                     getRepositoryDetailsUseCase(owner, repo)
                 }
-                val contentsDeferred = async {
-                    getRepositoryContentsUseCase(owner, repo)
+
+                val treeDeferred = async {
+                    loadDirectory(owner, repo, "")
                 }
 
                 _repoState.value = RepoUiState.Success(
                     details = detailsDeferred.await(),
-                    contents = contentsDeferred.await()
+                    tree = treeDeferred.await()
                 )
 
             } catch (e: Exception) {

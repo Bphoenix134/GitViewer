@@ -28,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,8 +35,7 @@ import androidx.compose.ui.unit.dp
 import domain.model.TreeNode
 import kotlinx.coroutines.launch
 import presentation.viewmodel.RepoViewModel
-import presentation.viewmodel.state.ContentState
-import presentation.viewmodel.state.DetailsState
+import presentation.viewmodel.state.RepoUiState
 
 @Composable
 fun RepoInfoScreen(
@@ -47,15 +45,10 @@ fun RepoInfoScreen(
     onFileClick: (name: String, url: String) -> Unit,
     onBack: () -> Unit
 ) {
-    val detailsState by viewModel.detailsState.collectAsState()
-    val contentState by viewModel.contentState.collectAsState()
-
-    var rootNodes by remember { mutableStateOf<List<TreeNode>>(emptyList()) }
+    val repoState by viewModel.repoState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadRepositoryDetails(owner, repo)
-        viewModel.loadRepositoryContents(owner, repo, "")
-        rootNodes = viewModel.loadDirectory(owner, repo, "")
+        viewModel.loadRepository(owner, repo)
     }
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
@@ -84,8 +77,7 @@ fun RepoInfoScreen(
 
         Spacer(Modifier.size(30.dp))
 
-        when (detailsState) {
-            is DetailsState.Loading -> CircularProgressIndicator(color = Color.Black)
+                when (repoState) {
 
             is DetailsState.Error -> Text(
                 text = (detailsState as DetailsState.Error).message,
@@ -132,13 +124,24 @@ fun RepoInfoScreen(
                 color = MaterialTheme.colors.error
             )
 
-            is ContentState.Success -> TreeView(
-                    nodes = rootNodes,
-                    onFileClick = onFileClick,
-                    onOpenDir = { node ->
-                        viewModel.loadDirectory(owner, repo, "")
+                        Spacer(Modifier.height(8.dp))
+
+                        TreeView(
+                            nodes = state.tree,
+                            onFileClick = onFileClick,
+                            onOpenDir = { node ->
+                                viewModel.loadDirectory(
+                                    owner = owner,
+                                    repo = repo,
+                                    path = node.path
+                                )
+                            }
+                        )
                     }
-            )
+
+                    RepoUiState.Idle -> Unit
+                }
+            }
 
             else -> {}
         }
