@@ -23,6 +23,8 @@ kotlin {
                 api("androidx.core:core-ktx:1.17.0")
                 implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
                 implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0")
+                implementation("io.ktor:ktor-client-okhttp:3.3.3")
+                implementation("io.ktor:ktor-client-java:3.3.3")
             }
         }
     }
