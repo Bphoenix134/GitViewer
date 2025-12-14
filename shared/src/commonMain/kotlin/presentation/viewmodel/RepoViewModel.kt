@@ -10,6 +10,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import presentation.viewmodel.state.FileUiState
 import presentation.viewmodel.state.RepoUiState
 import presentation.viewmodel.state.SearchUiState
 import io.ktor.client.request.get
@@ -19,11 +20,16 @@ import utils.FileDownloader
 class RepoViewModel(
     private val searchRepositoriesUseCase: SearchRepositoriesUseCase,
     private val getRepositoryDetailsUseCase: GetRepositoryDetailsUseCase,
-    private val getRepositoryContentsUseCase: GetRepositoryContentsUseCase
+    private val getRepositoryContentsUseCase: GetRepositoryContentsUseCase,
+    private val httpClient: HttpClient,
+    private val downloader: FileDownloader
 ) : ViewModel() {
 
     private val _searchUiState = MutableStateFlow<SearchUiState>(SearchUiState.Idle)
     val searchUiState: StateFlow<SearchUiState> = _searchUiState
+
+    private val _fileUiState = MutableStateFlow<FileUiState>(FileUiState.Loading)
+    val fileUiState: StateFlow<FileUiState> = _fileUiState
 
     fun searchRepositories(query: String) {
         viewModelScope.launch {
@@ -78,6 +84,31 @@ class RepoViewModel(
                 isDir = it.type == "dir",
                 downloadUrl = it.downloadUrl
             )
+        }
+    }
+
+    fun loadFile(url: String) {
+        viewModelScope.launch {
+            _fileUiState.value = FileUiState.Loading
+            try {
+                val response = httpClient.get(url)
+                _fileUiState.value = FileUiState.Success(
+                    response.bodyAsText()
+                )
+            } catch (e: Exception) {
+                _fileUiState.value = FileUiState.Error(
+                    e.message ?: "Failed to load file"
+                )
+            }
+        }
+    }
+
+    fun downloadFile(url: String, fileName: String) {
+        viewModelScope.launch {
+            try {
+                downloader.download(url, fileName)
+            } catch (e: Exception) {
+            }
         }
     }
 }
