@@ -1,6 +1,8 @@
 package screen
 
+import androidx.compose.foundation.VerticalScrollbar
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,10 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Card
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollbarAdapter
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -25,12 +27,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import domain.model.TreeNode
 import kotlinx.coroutines.launch
@@ -46,83 +45,98 @@ fun RepoInfoScreen(
     onBack: () -> Unit
 ) {
     val repoState by viewModel.repoState.collectAsState()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(Unit) {
         viewModel.loadRepository(owner, repo)
     }
 
-    Column(Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
 
         Row(
             modifier = Modifier.height(30.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(
-                onClick = onBack,
-                modifier = Modifier.fillMaxHeight()
-            ) {
+            IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back"
                 )
             }
 
-            Spacer(Modifier.size(15.dp))
+            Spacer(Modifier.width(15.dp))
 
             Text(
                 text = "Information about repository",
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.h5
             )
         }
 
-        Spacer(Modifier.size(30.dp))
+        Spacer(Modifier.height(24.dp))
+        Box(
+            Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(end = 12.dp)
+            ) {
 
                 when (repoState) {
 
-            is DetailsState.Error -> Text(
-                text = (detailsState as DetailsState.Error).message,
-                color = MaterialTheme.colors.error
-            )
+                    RepoUiState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
 
-            is DetailsState.Success -> {
-                val info = (detailsState as DetailsState.Success).details
+                    is RepoUiState.Error -> {
+                        Text(
+                            text = (repoState as RepoUiState.Error).message,
+                            color = MaterialTheme.colors.error
+                        )
+                    }
 
-                Text(info.fullName, style = MaterialTheme.typography.h6)
-                if (info.description != null) {
-                    Text(info.description!!, Modifier.padding(top = 8.dp))
-                }
+                    is RepoUiState.Success -> {
+                        val state = repoState as RepoUiState.Success
 
-                Spacer(Modifier.height(10.dp))
+                        val info = state.details
 
-                Text("Language: ${info.language ?: "-"}")
-                Text("⭐ Stars: ${info.stars}")
-                Text("\uD83D\uDCC4 Forks: ${info.forks}")
-                Text("⭕ Issues: ${info.issues}")
+                        Text(info.fullName, style = MaterialTheme.typography.h6)
 
-                Spacer(Modifier.height(10.dp))
+                        info.description?.let {
+                            Text(it, Modifier.padding(top = 8.dp))
+                        }
 
-                Text("Created: ${info.createdAt}")
-                Text("Updated: ${info.updatedAt}")
-                Text("Pushed: ${info.pushedAt}")
-            }
+                        Spacer(Modifier.height(10.dp))
 
-            else -> {}
-        }
+                        Text("Language: ${info.language ?: "-"}")
+                        Text("⭐ Stars: ${info.stars}")
+                        Text("📄 Forks: ${info.forks}")
+                        Text("⭕ Issues: ${info.issues}")
 
-        Spacer(Modifier.height(25.dp))
+                        Spacer(Modifier.height(10.dp))
 
-        Divider()
+                        Text("Created: ${info.createdAt}")
+                        Text("Updated: ${info.updatedAt}")
+                        Text("Pushed: ${info.pushedAt}")
 
-        Spacer(Modifier.height(15.dp))
+                        Spacer(Modifier.height(24.dp))
+                        Divider()
+                        Spacer(Modifier.height(16.dp))
 
-        Text("Structure of repository", style = MaterialTheme.typography.h6)
-
-        when (contentState) {
-
-            is ContentState.Error -> Text(
-                text = (contentState as ContentState.Error).message,
-                color = MaterialTheme.colors.error
-            )
+                        Text(
+                            text = "Structure of repository",
+                            style = MaterialTheme.typography.h6
+                        )
 
                         Spacer(Modifier.height(8.dp))
 
@@ -143,7 +157,12 @@ fun RepoInfoScreen(
                 }
             }
 
-            else -> {}
+            VerticalScrollbar(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .fillMaxHeight(),
+                adapter = rememberScrollbarAdapter(scrollState)
+            )
         }
     }
 }
