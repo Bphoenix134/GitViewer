@@ -13,6 +13,7 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import presentation.viewmodel.RepoViewModel
+import utils.FileDownloader
 
 val appModule = module {
 
@@ -40,5 +41,6 @@ val appModule = module {
     single { GetRepositoryDetailsUseCase(get()) }
     single { GetRepositoryContentsUseCase(get()) }
 
-    single { RepoViewModel(get(), get(), get()) }
+    single { RepoViewModel(get(), get(), get(), get(), get()) }
+
 }

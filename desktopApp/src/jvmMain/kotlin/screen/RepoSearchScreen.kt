@@ -35,7 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import component.RepoList
 import presentation.viewmodel.RepoViewModel
-import presentation.viewmodel.state.SearchState
+import presentation.viewmodel.state.SearchUiState
 import androidx.compose.ui.text.input.ImeAction
 
 @Composable
@@ -44,7 +44,7 @@ fun RepoSearchScreen(
     onRepoClick: (owner: String, repo: String) -> Unit
 ) {
     var query by remember { mutableStateOf("") }
-    val state by viewModel.searchState.collectAsState()
+    val state by viewModel.searchUiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -64,7 +64,7 @@ fun RepoSearchScreen(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight(),
-                placeholder = { Text("Введите запрос") },
+                placeholder = { Text("Enter your query") },
                 maxLines = 1,
                 colors = TextFieldDefaults.textFieldColors(
                     focusedIndicatorColor = Color.Black,
@@ -74,7 +74,7 @@ fun RepoSearchScreen(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Filled.Search,
-                        contentDescription = "Поиск"
+                        contentDescription = "Search"
                     )
                 },
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -104,15 +104,15 @@ fun RepoSearchScreen(
                 )
             ) {
                 Text(
-                    text = "Поиск",
+                    text = "Search",
                     color = Color.White
                 )
             }
         }
 
         when (state) {
-            is SearchState.Success -> RepoList(
-                repos = (state as SearchState.Success).data,
+            is SearchUiState.Success -> RepoList(
+                repos = (state as SearchUiState.Success).data,
                 onClick = { repo ->
                     if (repo.owner.isNotBlank()) {
                         onRepoClick(repo.owner, repo.name)
@@ -120,14 +120,14 @@ fun RepoSearchScreen(
                 }
             )
 
-            is SearchState.Loading -> Box(
+            is SearchUiState.Loading -> Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = Color.Black)
             }
 
-            is SearchState.Error -> Text(
+            is SearchUiState.Error -> Text(
                 text = "(state as SearchState.Error).message",
                 color = MaterialTheme.colors.error
             )

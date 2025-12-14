@@ -7,13 +7,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import di.appModule
+import di.desktopModule
 import di.initKoin
 import presentation.viewmodel.RepoViewModel
 import org.koin.java.KoinJavaComponent.get
 import screen.FileViewerScreen
 import screen.RepoInfoScreen
 import screen.RepoSearchScreen
-import io.ktor.client.HttpClient
 
 enum class Screen {
     SEARCH, INFO, VIEW_FILE
@@ -22,9 +22,11 @@ enum class Screen {
 data class FileViewData(val name: String, val url: String)
 
 fun main() = application {
-    initKoin(appModule)
+    initKoin(
+        appModule,
+        desktopModule
+    )
     val viewModel: RepoViewModel = get(RepoViewModel::class.java)
-    val client: HttpClient = get(HttpClient::class.java)
 
     Window(
         onCloseRequest = ::exitApplication,
@@ -67,7 +69,7 @@ fun main() = application {
                         Screen.VIEW_FILE -> FileViewerScreen(
                             fileName = selectedFile!!.name,
                             url = selectedFile!!.url,
-                            httpClient = client,
+                            viewModel = viewModel,
                             onBack = {
                                 screen = Screen.INFO
                             }
